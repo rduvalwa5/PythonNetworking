@@ -1,0 +1,56 @@
+Python Programming Chapter 5 Notes:
+
+A) parallel processing 
+	- “multiprocessing” “multitasking”)
+	- two fundamental tasks run at the same time
+		Python—process forks 
+		spawned threads
+	- both rely on underlying operating system services to run bits of 
+	  Python code in parallel
+	- Procedurally they are very different in terms of interface, portability, and communication
+		a) direct process forks are not supported on Windows under standard Python
+		   though they are under Cygwin Python on Windows
+		b) Python’s thread support works on all major platforms
+		c) os.spawn provides additional ways to launch programs in a platform neutral
+			way that is similar to forks
+			- the os.popen and os.system calls and subprocess module we studied in Chapters 2 and 3
+			  can be used to portably spawn programs with shell commands
+			- newer multiprocessing module offers additional ways to run processes portably in many contexts
+	- this chapter look at system interfaces available to Python programmers
+		a) explore Python’s built-in tools for starting tasks in parallel
+		b) communicating with those tasks
+			already begun doing so—os.system, os.popen, and subprocess
+			which we learned and applied over the last three chapters
+			, are a fairly portable way to spawn and speak with command-line programs
+	- emphasis introducing more direct techniques—forks, threads, pipes, signals, sockets,
+	  and launching techniques—and on using Python’s built-in tools that support them
+	  	- such as:
+	  		os.fork call 
+	  		threading
+			queue
+			multiprocessing modules
+
+	* One note the process, thread, and IPC mechanisms in this chapter are the primary parallel 
+	  processing tools in Python scripts, the third party domain offers additional options which 
+	  may serve more advanced or specialized roles.
+
+	  As just one example, the MPI for Python system allows Python scripts to also employ
+	  the Message Passing Interface (MPI) standard, allowing Python programs to exploit
+	  multiple processors in various ways (see the Web for details).
+	  
+B) 	Forking Processes
+	Forked processes a traditional way to structure parallel tasks
+		- fundamental part of the Unix tool set
+		- straightforward way to start an independent program
+		- based on the notion of copying programs: 
+			when a program calls the fork routine, the operating system makes a new 
+			copy of that program and its process in memory and starts running that copy in parallel
+			with the original
+		- the original copy of the program is called the parent process,
+		- the copy created by os.fork is called the child process
+		- parents can make any number of children
+		- children can create child processes of their own
+	 	- all forked processes run independently and in parallel under the operating system’s control
+	 	- children may continue to run after their parent exits
+
+	Example 5-1 forks new child processes until you type the letter q at the console

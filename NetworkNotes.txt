@@ -1,0 +1,10 @@
+Links:
+
+https://en.wikipedia.org/wiki/Internet_protocol_suite
+https://docs.python.org/3/library/socket.html?highlight=icmp
+
+http://pydoc.net/Python/gping/0.1/gping/
+
+A) Decorators are good for timing functions:
+	https://realpython.com/blog/python/primer-on-python-decorators/
+	decorator_timing_function_example.py
