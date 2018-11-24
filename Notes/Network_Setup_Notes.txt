@@ -1,0 +1,193 @@
+Tutorials for setting up Networking:
+
+https://www.tutorialspoint.com/python/python_networking.htm
+
+Alt:  https://www.justinsilver.com/technology/osx/send-emails-mac-os-x-postfix-gmail-relay/
+
+A) set up Postfix Mail server:  http://budiirawan.com/install-mail-server-mac-osx/
+
+	In this post, I would like to share how to install mail server on Mac OSX. Having mail server is important if you need to send 
+	email from your web application in local environment. To do this, we will use Postfix.
+
+	Postfix is a Mail Transport Agent (MTA), supporting LDAP, SMTP AUTH (SASL) and TLS. In this post, 
+	We will setup Postfix to run with SMTP.
+
+	Setup
+		– Mac OSX (I’m using OSX Yosemite 10.10.3).
+		– Terminal
+
+	Postfix Installation
+	No need it because Postfix already exist as pre-installed on Mac OSX. Open your terminal, make sure you can see response if
+	you type below:
+	
+	1.
+	$ postfix
+	postfix: error: to submit mail, use the Postfix sendmail command
+	postfix: fatal: the postfix command is reserved for the superuser
+
+	Great, then we are going to configure it to be able for sending email.
+
+	2.
+	Postfix Configuration
+	We are going to change postfix configuration file. Run this command below:
+
+	$ sudo vi /etc/postfix/main.cf
+	Make sure if these lines below are exist
+
+	mail_owner = _postfix
+	setgid_group = _postdrop
+
+	Then, add these lines at the end of file
+
+	# Use Gmail SMTP
+	relayhost = smtp.gmail.com:587
+	smtp_sasl_mechanism_filter = plain	
+	smtp_sasl_auth_enable = yes
+	smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+	smtp_use_tls = yes
+	smtp_tls_security_level = encrypt
+	tls_random_source = dev:/dev/urandom
+
+
+	3.
+	From codes above, you can see that we use Gmail SMTP for our postfix. Next step is add our gmail’s username and password.
+
+	$ sudo vim /etc/postfix/sasl_passwd
+
+	and add this line
+
+	smtp.gmail.com:587 your_username@gmail.com:your_password
+
+	Then run command below to create the hash db file for Postfix.
+
+	$ sudo postmap /etc/postfix/sasl_passwd
+
+	4.
+	Configure the postfix daemon
+
+	$ sudo vi /System/Library/LaunchDaemons/org.postfix.master.plist
+	Add these lines before </dict>
+
+	<key>RunAtLoad</key>
+	<true/>	
+	<key>KeepAlive</key>
+	<true/>
+
+Start the postfix service
+
+	$ sudo postfix start
+	* Note that if you make changes in postfix configuration file (/etc/postfix/main.cf), you have to run command
+
+	$ sudo postfix reload
+
+
+	Testing
+
+	Here is the command you need to execute to test postfix.
+
+	$ echo "Test sending email from Postfix" | mail -s "Test Postfix" youremail@domain.com
+
+	If success, you will receive email in your inbox.
+
+	postfix-testing-email
+
+	If you want to see mail queues, execute this command
+
+	$ mailq
+	If you want to see mail log, execute this command
+
+	$ tail -f /var/log/mail.log
+
+	Conclusion
+	Setting up mail server on Mac OSX can be done using pre-installed Postfix. Having mail server in local environment 
+	will give you advantage for your web application that have sending email feature.
+
+
+------------------------------------
+See Mac Note on how to disable SIP
+------------------------------------	
+  499  sudo su root
+  500  csrutil status
+  501  csrutil disable 
+  502  csrutil status
+  503  postfix
+  504  sudo vi /etc/postfix/main.cf
+  505  sudo vim /etc/postfix/sasl_passwd
+  506  sudo vim /etc/postfix/sasl_passwd
+  507  sudo postmap /etc/postfix/sasl_passwd
+  508  sudo vi /System/Library/LaunchDaemons/org.postfix.master.plist
+  
+  Reboot computer
+  
+  509  sudo postfix start
+  510  sudo postfix reload
+  511  sudo postfix start
+  512  echo "Test sending email from Postfix" | mail -s "Test Postfix" rduvalwag@gamil.com
+  513  sudo postfix start
+  514  sudo postfix stop
+	
+________________________________________________
+Test Postfix
+________________________________________________
+OSXAir:~ rduvalwa2$ mail rduvalwa2 
+Subject: Test Mail
+Thsi si a test mail message and lucky I remeber some Unix.
+.
+EOT
+OSXAir:~ rduvalwa2$ mail
+Mail version 8.1 6/6/93.  Type ? for help.
+"/var/mail/rduvalwa2": 1 message 1 new
+>N  1 rduvalwa2@OSXAir.hom  Fri Nov 23 22:48  14/507   "Test Mail"
+? 
+Message 1:
+From rduvalwa2@OSXAir.home  Fri Nov 23 22:48:08 2018
+X-Original-To: rduvalwa2
+Delivered-To: rduvalwa2@OSXAir.home
+To: rduvalwa2@OSXAir.home
+Subject: Test Mail
+Date: Fri, 23 Nov 2018 22:48:08 -0800 (PST)
+From: rduvalwa2@OSXAir.home (rduvalwa2)
+
+Thsi si a test mail message and lucky I remeber some Unix.
+
+? mailque
+Unknown command: "mailque"
+? ?
+    Mail   Commands
+t <message list>		type messages
+n				goto and type next message
+e <message list>		edit messages
+f <message list>		give head lines of messages
+d <message list>		delete messages
+s <message list> file		append messages to file
+u <message list>		undelete messages
+R <message list>		reply to message senders
+r <message list>		reply to message senders and all recipients
+pre <message list>		make messages go back to /var/mail
+m <user list>			mail to specific users
+q				quit, saving unresolved messages in mbox
+x				quit, do not remove system mailbox
+h				print out active message headers
+!				shell escape
+cd [directory]			chdir to directory or home if none given
+
+A <message list> consists of integers, ranges of same, or user names separated
+by spaces.  If omitted, Mail uses the last message typed.
+
+A <user list> consists of user names or aliases separated by spaces.
+Aliases are defined in .mailrc in your home directory.
+? 
+	
+=============================================================
+OSXAir:~ rduvalwa2$ sudo postfix status
+postfix: Postfix is running with backwards-compatible default settings
+postfix: See http://www.postfix.org/COMPATIBILITY_README.html for details
+postfix: To disable backwards compatibility use "postconf compatibility_level=2" and "postfix reload"
+/usr/sbin/postconf: warning: /etc/postfix/main.cf: unused parameter: smtp_sasl_mechanism_filer=plain
+/usr/sbin/postconf: warning: /etc/postfix/main.cf: unused parameter: smtp_use_tsl=yes
+postfix/postfix-script: the Postfix mail system is running: PID: 780
+OSXAir:~ rduvalwa2$ 
+=============================================================	
+
+
+Alternative :  https://www.cutedgesystems.com/software/MailServeForMojave/index.html

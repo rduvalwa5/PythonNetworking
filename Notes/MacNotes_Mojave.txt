@@ -1,0 +1,55 @@
+These notes are about MacOsx Mojave:
+
+1) Mac has SIP (System Integrity Protection) 
+	- which prevents even root from modifying plist configuration files in /System/Library/LaunchDaemons
+	- prevents changing permissions on certain files (chmod)
+   
+2) This issue came to light when I was trying to set up local mail server on my Mac.  Postfix is installed with operating system.
+
+	see:  http://budiirawan.com/install-mail-server-mac-osx/
+	
+3) To become root on MAC:  sudo su root
+
+4) To gain access to files under SIP:  
+https://www.minicreo.com/omni-recover/how-to-disable-mac-sip-on-mojave.html
+https://www.tekrevue.com/tip/disable-system-integrity-protection-macos/
+
+Longtime Mac power users likely enjoyed the ability to tweak the operating system at its lowest levels. 
+For years, hidden settings and customization apps let users take complete control of their Mac to customize how it looked and functioned.
+But if the user can access these core system files, so too can malware. It’s this reality that prompted Apple to introduce a security 
+feature called System Integrity Protection in macOS, starting with OS X El Capitan in 2015. And while System Integrity Protection is 
+an important feature that most users will benefit from, it can cause issues with certain power user workflows and applications. 
+So, if you’re willing to accept the risk of reduced security in exchange for greater flexibility, here’s how to disable 
+System Integrity Protection in macOS.
+
+A.  Disable SIP: as root
+
+	1)  To disable System Integrity Protection, boot your Mac into Recovery Mode by pressing and holding the 
+		Command and	R keys on your keyboard as soon as you hear the boot chime.
+          	
+	2)  To check to see if System Integrity Protection is currently enabled or disabled, use the command csrutil status.  
+	sh-3.2# csrutil
+	usage: csrutil <command>
+	Modify the System Integrity Protection configuration. All configuration changes apply to the entire machine.
+	Available commands:
+    	clear
+        	Clear the existing configuration.
+    	disable
+        	Disable the protection on the machine. Only available in Recovery OS.
+    	enable
+        	Enable the protection on the machine. Only available in Recovery OS.
+    	status
+        	Display the current configuration.
+        	
+    	netboot
+        	add <address>
+            	Insert a new IPv4 address in the list of allowed NetBoot sources.
+        	list
+            	Print the list of allowed NetBoot sources.
+        	remove <address>
+            	Remove an IPv4 address from the list of allowed NetBoot sources.  
+            	
+	3)  To disable System Integrity Protection, use the command csrutil disable. 
+		You can re-enable it later by repeating these steps and using the command csrutil enable instead. 	
+		
+	4)  Once you’ve disabled System Integrity Protection, restart your Mac via the Apple menu.
