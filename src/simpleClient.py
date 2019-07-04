@@ -17,9 +17,10 @@ OSXAir:src rduvalwa2$
 import socket               # Import socket module
 
 s = socket.socket()         # Create a socket object
-host = "C1246895-OSX2.home"    # socket.gethostname() # Get local machine name
+host = socket.gethostname() # Get local machine name
 port = 12349                # Reserve a port for your service.
 print("connecting to ", host, " at port" ,port)
 s.connect((host, port))
+print(s.getsockname(), s.gettimeout())
 print (s.recv(1024))
 s.close                     # Close the socket when done
